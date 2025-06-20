@@ -33,3 +33,38 @@ The objective of this project is to develop a Haar cascade classifier for detect
 - Used `opencv_createsamples` to generate `positive.vec`:
   ```bash
   opencv_createsamples -info positive.txt -num 200 -w 24 -h 24 -vec positive.vec
+D. Training the Classifier
+
+Trained using opencv_traincascade:
+
+bash
+複製程式碼
+opencv_traincascade \
+  -data classifier_yzu1 \
+  -vec positives.vec \
+  -bg YZU_First_building_negative.txt \
+  -numPos 90 -numNeg 200 \
+  -numStages 10 -w 24 -h 24
+Highlighted that this requires OpenCV 3.4.16, as newer versions lack createsamples/traincascade tools.
+
+Outputs include cascade.xml and stage files.
+
+E. Real-Time Detection
+
+Implemented in Seven_building_detect_with_Camera.py, using camera input (USB webcam or DroidCam).
+
+Detects only the Seventh Building and overlays a personal message when detected.
+
+🎥 Demo & Code
+Video Demonstration: [YouTube Link]
+GitHub Repository: https://github.com/Shichi7meow/Introduction-to-Computer-Vision-and-Image-Processing_final-project
+
+🧠 Discussion
+Strengths: Successful under controlled conditions (good lighting, clear framing).
+
+Challenges: poor lighting, occlusion, angle variance, resizing distortion, false positives.
+
+Solutions: increase data size/diversity, higher training resolution, adopt deep-learning models (YOLO, SSD), multi-building detection.
+
+📝 Conclusion
+Classical Haar-based building detection is feasible but limited in variability handling and robustness. Future improvements should focus on more varied data, modern models, and multi-object support.
