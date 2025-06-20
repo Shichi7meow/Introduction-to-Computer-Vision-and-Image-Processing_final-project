@@ -15,10 +15,88 @@ The objective of this project is to develop a Haar cascade classifier for detect
 
 ---
 
-## 🧩 Introduction
-(簡要介紹專案背景與動機，例如你來校園迷路的經驗、資料收集流程的概觀...)
+🔧 System Setup & Workflow
+Real-Time Building Detection Using Haar Cascade Classifier
 
----
+🖥️ 1. Environment & Tools
+工具	說明
+Python :3.x	用於整個專案開發
+OpenCV :3.4.16 (with CLI tools)	用於 opencv_createsamples 和 opencv_traincascade
+LabelImg:	用於手動標註正樣本 bounding boxes
+DroidCam / USB Webcam:	測試階段所用的即時攝影機輸入
+Windows 10 / Ubuntu (可選):	系統執行環境皆可
+IDE / 編輯器:	建議使用 PyCharm、VS Code
+
+2. Data Preparation
+✅ (1) 正樣本收集
+拍攝目標建築「元智大學第七棟」的多張照片。
+
+照片需涵蓋 不同角度、時間與光照。
+
+Resize 所有圖片至標準尺寸（如 500x500 或 640x480）。
+
+❌ (2) 負樣本收集
+拍攝校園其他建築或隨機背景圖。
+
+不含第七棟建築物。
+
+用於產生 negative.txt。
+
+✍️ (3) 標註正樣本
+使用 LabelImg 對每張正樣本圖片畫出建築物的 bounding box。
+
+轉換產生 positive.txt（OpenCV 格式），格式如下：
+
+pgsql
+複製程式碼
+path/to/image.jpg 1 x y w h
+🧾 3. 資料檔案生成
+📦 (1) 建立 .vec 檔
+使用以下指令產生 .vec：
+
+bash
+複製程式碼
+opencv_createsamples -info positive.txt -num 200 -w 24 -h 24 -vec positives.vec
+注意 positive.txt 格式與最後一行不要有錯（否則會產生 parse error）。
+
+🏗️ 4. 模型訓練 (Haar Classifier)
+使用 opencv_traincascade 指令訓練模型：
+
+bash
+複製程式碼
+opencv_traincascade \
+  -data classifier_yzu1 \
+  -vec positives.vec \
+  -bg negative.txt \
+  -numPos 90 -numNeg 200 \
+  -numStages 10 -w 24 -h 24
+輸出目錄（如 classifier_yzu1/）將包含：
+
+cascade.xml → 最終模型（用於實際偵測）
+
+stage0.xml~stage9.xml → 每階段中間模型（除錯用）
+
+5. 實時偵測應用
+執行 Seven_building_detect_with_Camera.py
+
+載入 cascade.xml 進行建築物辨識
+
+當辨識出第七棟時，於畫面上顯示你對該建築的個人回憶文字
+
+支援裝置：
+
+筆電內建攝影機
+
+USB 外接攝影機
+
+手機相機 (經由 DroidCam)
+
+6. 測試與評估
+在不同環境（光線、角度、遮蔽情況）下測試效果
+
+紀錄成功與失敗案例
+
+評估準確率與即時反應效果
 
 ## 🛠️ System Design
 **A. Sample Generation**
